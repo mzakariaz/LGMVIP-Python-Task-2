@@ -1,4 +1,3 @@
-# CREDIT: https://www.youtube.com/watch?v=PHdZdrMCKuY
 import pygame
 import time
 import random
@@ -14,13 +13,13 @@ orange = (255, 165, 0)
 width, height = 600, 400
 
 game_display = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Snake Game")
+pygame.display.set_caption("NeuralNine Snake Game")
 clock = pygame.time.Clock()
 
 snake_size = 10
 snake_speed = 15
-message_font = pygame.font.SysFont("arialblack", 30)
-score_font = pygame.font.SysFont("arialblack", 25)
+message_font = pygame.font.SysFont("ubuntu", 30)
+score_font = pygame.font.SysFont("ubuntu", 25)
 
 
 def print_score(score):
@@ -62,28 +61,21 @@ def run_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
-                game_close = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT and x_speed == 0:
+                if event.key == pygame.K_LEFT:
                     x_speed -= snake_size
                     y_speed = 0
-                if event.key == pygame.K_RIGHT and x_speed == 0:
+                if event.key == pygame.K_RIGHT:
                     x_speed += snake_size
                     y_speed = 0
-                if event.key == pygame.K_UP and y_speed == 0:
+                if event.key == pygame.K_UP:
                     x_speed = 0
                     y_speed -= snake_size
-                if event.key == pygame.K_DOWN and y_speed == 0:
+                if event.key == pygame.K_DOWN:
                     x_speed = 0
                     y_speed += snake_size
-        if x >= width:
-            x %= width
-        if x < 0:
-            x += width
-        if y >= height:
-            y %= height
-        if y < 0:
-            y += height
+        if x >= width or x < 0 or y >= height or y < 0:
+            game_close = True
         
         x += x_speed
         y += y_speed
