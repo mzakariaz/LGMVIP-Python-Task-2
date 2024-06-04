@@ -1,11 +1,8 @@
-## WORK IN PROGRESS
 # Import packages
 import os
 import sys
-import time
 import random
 import pygame
-import pygame_menu
 from pygame.locals import *
 
 # Define constants
@@ -13,14 +10,8 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 800
 DIMENSIONS = (SCREEN_WIDTH, SCREEN_HEIGHT)
 RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-CYAN = (0, 255, 255)
-MAGENTA = (255, 0, 255)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-ORANGE = (255, 165, 0)
 BLUEGRAY = (65, 75, 95)
 MESSAGE_FONT_FAMILY = "arialblack"
 MESSAGE_FONT_SIZE = 30
@@ -30,7 +21,7 @@ SCORE_FONT_SIZE = 20
 
 # Initialise variables
 snake_size = 10
-snake_speed = 15
+snake_speed = 30
 
 # Define functions
 def print_score(score):
@@ -45,11 +36,10 @@ def draw_snake(snake_size, snake_pixels):
 clock = pygame.time.Clock()
 pygame.init()
 window = pygame.display.set_mode(DIMENSIONS)
-icon = pygame.image.load("C:/Users/Zakar/Desktop/General/projects/letsgrowmore/LGMVIP-Python-Task-2/assets/images/snake.png")
+icon = pygame.image.load((os.path.abspath(os.path.join(__file__, os.pardir)) + "/assets/images/snake.png").replace("\\", "/").replace("main/",""))
 pygame.display.set_caption("Snake Game")
 pygame.display.set_icon(icon)
 font = pygame.font.SysFont("arialblack", 20)
-# Credit: <a href="https://www.flaticon.com/free-icons/snake" title="snake icons">Snake icons created by Freepik - Flaticon</a>
 
 def main_menu():
     while True:
@@ -106,7 +96,6 @@ def game():
         target_x = int(random.randrange(0, SCREEN_WIDTH - snake_size) / 10.0) * 10
         target_y = int(random.randrange(0, SCREEN_HEIGHT - snake_size) / 10.0) * 10
         window.fill(BLUEGRAY)
-        print_score(snake_length - 1)
         x = random.randint(0, SCREEN_WIDTH)
         y = random.randint(0, SCREEN_HEIGHT)
         while not game_over:
@@ -152,7 +141,6 @@ def game():
 
             window.fill(BLUEGRAY)
             pygame.draw.rect(window, RED, [target_x, target_y, snake_size, snake_size])
-            
             snake_pixels.append([x, y])
             
             if len(snake_pixels) > snake_length:
@@ -163,14 +151,14 @@ def game():
                     game_close = True
             
             draw_snake(snake_size, snake_pixels)
+            print_score(snake_length - 1)
             pygame.display.update()
 
-            if x == target_x and y == target_y:
+            if max(abs(x - target_x), abs(y - target_y)) <= 5:
                 target_x = round(random.randrange(0, SCREEN_WIDTH - snake_size) / 10.0) * 10
                 target_y = round(random.randrange(0, SCREEN_HEIGHT - snake_size) / 10.0) * 10
                 score += 1
                 snake_length += 1
-            
             clock.tick(snake_speed)
             pygame.display.update()
 
