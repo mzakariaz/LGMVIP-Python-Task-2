@@ -154,7 +154,7 @@ def game():
             print_score(snake_length - 1)
             pygame.display.update()
 
-            if max(abs(x - target_x), abs(y - target_y)) <= 5:
+            if max(abs(x - target_x), abs(y - target_y)) <= 7.5:
                 target_x = round(random.randrange(0, SCREEN_WIDTH - snake_size) / 10.0) * 10
                 target_y = round(random.randrange(0, SCREEN_HEIGHT - snake_size) / 10.0) * 10
                 score += 1
