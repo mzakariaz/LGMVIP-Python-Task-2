@@ -1,3 +1,4 @@
+## WORK IN PROGRESS
 # Import packages
 import os
 import sys
@@ -21,20 +22,30 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 ORANGE = (255, 165, 0)
 BLUEGRAY = (65, 75, 95)
+MESSAGE_FONT_FAMILY = "arialblack"
+MESSAGE_FONT_SIZE = 30
+SCORE_FONT_FAMILY = MESSAGE_FONT_FAMILY
+SCORE_FONT_SIZE = 20
+
 
 # Initialise variables
-snake_length = 1
-score = 0
-running = False
+snake_size = 10
+snake_speed = 15
 
 # Define functions
+def print_score(score):
+    text = pygame.font.SysFont(SCORE_FONT_FAMILY, SCORE_FONT_SIZE).render(f"Score: {score}", True, WHITE)
+    window.blit(text, [0, 0])
+
+def draw_snake(snake_size, snake_pixels):
+    for pixel in snake_pixels:
+        pygame.draw.rect(window, WHITE, [pixel[0], pixel[1], snake_size, snake_size])
 
 # Initialise PyGame application
-main_clock = pygame.time.Clock()
+clock = pygame.time.Clock()
 pygame.init()
 window = pygame.display.set_mode(DIMENSIONS)
 icon = pygame.image.load("C:/Users/Zakar/Desktop/General/projects/letsgrowmore/LGMVIP-Python-Task-2/assets/images/snake.png")
-background = pygame.image.load("C:/Users/Zakar/Desktop/General/projects/letsgrowmore/LGMVIP-Python-Task-2/assets/images/background.png")
 pygame.display.set_caption("Snake Game")
 pygame.display.set_icon(icon)
 font = pygame.font.SysFont("arialblack", 20)
@@ -75,25 +86,93 @@ def main_menu():
                 if event.button == 1:
                     click = True
         pygame.display.update()
-        main_clock.tick(60)
+        clock.tick(snake_speed)
 
 def game():
     running = True
+    score = 0
     while running:
         window.fill(BLUEGRAY)
-        font.render("Game", True, WHITE).get_rect().topleft = (20, 20)
-        window.blit(font.render("Game", True, WHITE), font.render("Snake Game", True, WHITE).get_rect())
+        font.render(f"Score: {score}", True, WHITE).get_rect().topleft = (20, 20)
+        window.blit(font.render(f"Score: {score}", True, WHITE), font.render("Snake Game", True, WHITE).get_rect())
+        game_over = False
+        game_close = False
+        x = SCREEN_WIDTH / 2
+        y = SCREEN_HEIGHT / 2
+        x_speed = 0
+        y_speed = 0
+        snake_pixels = []
+        snake_length = 1
+        target_x = int(random.randrange(0, SCREEN_WIDTH - snake_size) / 10.0) * 10
+        target_y = int(random.randrange(0, SCREEN_HEIGHT - snake_size) / 10.0) * 10
+        window.fill(BLUEGRAY)
+        print_score(snake_length - 1)
         x = random.randint(0, SCREEN_WIDTH)
         y = random.randint(0, SCREEN_HEIGHT)
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
-        pygame.display.update()
-        main_clock.tick(60)
+        while not game_over:
+            while game_close:
+                window.fill(BLUEGRAY)
+                game_over_message = pygame.font.SysFont(MESSAGE_FONT_FAMILY, MESSAGE_FONT_SIZE).render("Game Over!", True, WHITE)
+                window.blit(game_over_message, [SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3])
+                pygame.display.update()
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == K_1:
+                            quit()
+                        if event.key == K_2:
+                            main_menu()
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    quit()
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        running = False
+                    if event.key == K_LEFT and x_speed == 0:
+                        x_speed = -snake_size
+                        y_speed = 0
+                    if event.key == K_RIGHT and x_speed == 0:
+                        x_speed = snake_size
+                        y_speed = 0
+                    if event.key == K_UP and y_speed == 0:
+                        x_speed = 0
+                        y_speed = -snake_size
+                    if event.key == K_DOWN and y_speed == 0:
+                        x_speed = 0
+                        y_speed = snake_size
+            if x < 0:
+                x += SCREEN_WIDTH
+            if x >= SCREEN_WIDTH:
+                x %= SCREEN_WIDTH
+            if y < 0:
+                y += SCREEN_HEIGHT
+            if y >= SCREEN_HEIGHT:
+                y %= SCREEN_HEIGHT
+            x += x_speed
+            y += y_speed
+
+            window.fill(BLUEGRAY)
+            pygame.draw.rect(window, RED, [target_x, target_y, snake_size, snake_size])
+            
+            snake_pixels.append([x, y])
+            
+            if len(snake_pixels) > snake_length:
+                del snake_pixels[0]
+            
+            for pixel in snake_pixels[:-1]:
+                if pixel == [x, y]:
+                    game_close = True
+            
+            draw_snake(snake_size, snake_pixels)
+            pygame.display.update()
+
+            if x == target_x and y == target_y:
+                target_x = round(random.randrange(0, SCREEN_WIDTH - snake_size) / 10.0) * 10
+                target_y = round(random.randrange(0, SCREEN_HEIGHT - snake_size) / 10.0) * 10
+                score += 1
+                snake_length += 1
+            
+            clock.tick(snake_speed)
+            pygame.display.update()
 
 def quit():
     pygame.quit()
